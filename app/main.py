@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from app.database import Base, engine
 from app.models import db_models  
+from app.routers import jobs, resumes, candidates
 
 Base.metadata.create_all(bind=engine)
 
@@ -10,6 +11,10 @@ app = FastAPI(
     description="AI-powered platform for matching candidates against job descriptions",
     version="0.1.0",
 )
+
+app.include_router(jobs.router)
+app.include_router(resumes.router)
+app.include_router(candidates.router)
 
 
 @app.get("/")

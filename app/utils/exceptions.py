@@ -18,3 +18,6 @@ class CorruptedDocumentError(DocumentProcessingError):
     def __init__(self, filename: str, reason: str = ""):
         self.filename = filename
         super().__init__(f"'{filename}' appears to be corrupted or unreadable. {reason}")
+
+class LLMServiceError(Exception):
+    pass
