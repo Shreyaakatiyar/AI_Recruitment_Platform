@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from app.database import Base, engine
 from app.models import db_models  
-from app.routers import jobs, resumes, candidates
+from app.routers import jobs, resumes, candidates, matching
 
 Base.metadata.create_all(bind=engine)
 
@@ -15,6 +15,7 @@ app = FastAPI(
 app.include_router(jobs.router)
 app.include_router(resumes.router)
 app.include_router(candidates.router)
+app.include_router(matching.router)
 
 
 @app.get("/")

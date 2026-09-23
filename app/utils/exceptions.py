@@ -21,3 +21,6 @@ class CorruptedDocumentError(DocumentProcessingError):
 
 class LLMServiceError(Exception):
     pass
+
+class EmbeddingServiceError(Exception):
+    pass
