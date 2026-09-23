@@ -1,5 +1,10 @@
 from fastapi import FastAPI
 
+from app.database import Base, engine
+from app.models import db_models  
+
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI(
     title="AI Recruitment & Candidate Matching Platform",
     description="AI-powered platform for matching candidates against job descriptions",
