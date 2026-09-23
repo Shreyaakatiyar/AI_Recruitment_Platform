@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+.env
+recruitment.db
+*.log
+.DS_Store
+sample_data/uploads/
+.pytest_cache/
