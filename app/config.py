@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     weight_projects: float = 0.20
     weight_education: float = 0.10
     weight_additional_skills: float = 0.05
+    max_resume_file_size_mb: int = 5
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

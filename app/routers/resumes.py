@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.config import settings
 from app.models.db_models import Job, Candidate
 from app.schemas.candidate_schemas import CandidateResponse
 from app.services.document_processor import extract_text
@@ -22,6 +23,13 @@ async def upload_resume(
         raise HTTPException(status_code=404, detail=f"Job with id {job_id} not found")
 
     file_bytes = await file.read()
+
+    max_bytes = settings.max_resume_file_size_mb * 1024 * 1024
+    if len(file_bytes) > max_bytes:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File too large. Maximum size is {settings.max_resume_file_size_mb}MB.",
+        )
 
     try:
         raw_text = extract_text(file_bytes, file.filename)

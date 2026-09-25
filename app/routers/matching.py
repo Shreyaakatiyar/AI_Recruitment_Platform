@@ -3,14 +3,14 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.db_models import Job, Candidate, Match
-from app.schemas.match_schemas import MatchResponse, RankingEntry
+from app.schemas.match_schemas import MatchResponse, RankingEntry, MatchBatchResult, FailedCandidateMatch
 from app.services.matching_service import compute_and_save_match
 from app.utils.exceptions import EmbeddingServiceError, LLMServiceError
 
 router = APIRouter(tags=["Matching"])
 
 
-@router.post("/match", response_model=list[MatchResponse])
+@router.post("/match", response_model=MatchBatchResult)
 def run_matching(job_id: int, db: Session = Depends(get_db)):
     job = db.query(Job).filter(Job.id == job_id).first()
     if not job:
@@ -20,15 +20,15 @@ def run_matching(job_id: int, db: Session = Depends(get_db)):
     if not candidates:
         raise HTTPException(status_code=400, detail="No candidates found for this job. Upload resumes first.")
 
-    results = []
+    successful, failed = [], []
     for candidate in candidates:
         try:
             match = compute_and_save_match(db, job, candidate)
+            successful.append(match)
         except (EmbeddingServiceError, LLMServiceError) as e:
-            raise HTTPException(status_code=502, detail=f"Matching failed for candidate {candidate.id}: {e}")
-        results.append(match)
+            failed.append(FailedCandidateMatch(candidate_id=candidate.id, error=str(e)))
 
-    return results
+    return MatchBatchResult(successful_matches=successful, failed_candidates=failed)
 
 
 @router.get("/ranking", response_model=list[RankingEntry])
