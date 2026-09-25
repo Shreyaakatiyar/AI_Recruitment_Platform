@@ -8,6 +8,7 @@ from app.services.scoring_service import (
     compute_project_score,
     compute_education_score,
 )
+from app.services.explanation_service import generate_match_explanation
 
 
 def compute_and_save_match(db: Session, job: Job, candidate: Candidate) -> Match:
@@ -25,6 +26,18 @@ def compute_and_save_match(db: Session, job: Job, candidate: Candidate) -> Match
         + settings.weight_additional_skills * additional_skills_score
     ) * 100
 
+    explanation = generate_match_explanation(
+        job_title=job.title,
+        match_score=round(final_score, 2),
+        skill_score=round(skill_score * 100, 2),
+        experience_score=round(experience_score * 100, 2),
+        project_score=round(project_score * 100, 2),
+        education_score=round(education_score * 100, 2),
+        matching_skills=matching_skills,
+        missing_skills=missing_skills,
+        
+    )
+
     match = db.query(Match).filter(Match.candidate_id == candidate.id).first()
     if match is None:
         match = Match(candidate_id=candidate.id, job_id=job.id)
@@ -38,6 +51,7 @@ def compute_and_save_match(db: Session, job: Job, candidate: Candidate) -> Match
     match.additional_skills_score = round(additional_skills_score * 100, 2)
     match.matching_skills = matching_skills
     match.missing_skills = missing_skills
+    match.ai_explanation = explanation
 
     db.commit()
     db.refresh(match)

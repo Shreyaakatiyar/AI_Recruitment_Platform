@@ -30,3 +30,12 @@ class RankingEntry(BaseModel):
     match_score: float
     matching_skills: list[str] = []
     missing_skills: list[str] = []
+
+class FailedCandidateMatch(BaseModel):
+    candidate_id: int
+    error: str
+
+
+class MatchBatchResult(BaseModel):
+    successful_matches: list[MatchResponse]
+    failed_candidates: list[FailedCandidateMatch]

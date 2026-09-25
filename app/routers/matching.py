@@ -5,7 +5,7 @@ from app.database import get_db
 from app.models.db_models import Job, Candidate, Match
 from app.schemas.match_schemas import MatchResponse, RankingEntry
 from app.services.matching_service import compute_and_save_match
-from app.utils.exceptions import EmbeddingServiceError
+from app.utils.exceptions import EmbeddingServiceError, LLMServiceError
 
 router = APIRouter(tags=["Matching"])
 
@@ -24,7 +24,7 @@ def run_matching(job_id: int, db: Session = Depends(get_db)):
     for candidate in candidates:
         try:
             match = compute_and_save_match(db, job, candidate)
-        except EmbeddingServiceError as e:
+        except (EmbeddingServiceError, LLMServiceError) as e:
             raise HTTPException(status_code=502, detail=f"Matching failed for candidate {candidate.id}: {e}")
         results.append(match)
 
