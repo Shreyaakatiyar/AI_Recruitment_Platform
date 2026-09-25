@@ -7,3 +7,4 @@ recruitment.db
 .DS_Store
 sample_data/uploads/
 .pytest_cache/
+test_recruitment.db
