@@ -188,6 +188,7 @@ server is running. Key endpoints:
 | POST | `/match?job_id=` | Score all candidates for a job |
 | GET | `/ranking?job_id=` | Get candidates ranked by match score |
 | GET | `/health` | Health check |
+| GET | `/jobs` | List all jobs |
 
 ## 14. Installation
 

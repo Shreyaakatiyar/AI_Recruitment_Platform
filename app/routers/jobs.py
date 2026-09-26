@@ -30,6 +30,10 @@ def create_job(payload: JobCreate, db: Session = Depends(get_db)):
     db.refresh(job)
     return job
 
+@router.get("", response_model=list[JobResponse])
+def list_jobs(db: Session = Depends(get_db)):
+    return db.query(Job).all()
+
 
 @router.get("/{job_id}", response_model=JobResponse)
 def get_job(job_id: int, db: Session = Depends(get_db)):
